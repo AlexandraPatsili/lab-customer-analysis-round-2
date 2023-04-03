@@ -1,0 +1,105 @@
+1. Show the dataframe shape.
+	import pandas as pd
+	import numpy as np	
+	marketing = pd.read_csv("marketing_customer_analysis.csv")
+	marketing.shape
+
+2. Standardize header names.
+
+	marketing_sta= []
+	for i in marketing.columns:
+    	i=i.replace(" ","_")
+    	marketing_sta.append(i.lower())
+	marketing.columns = marketing_sta
+
+	As unnamed:_0 is not needed we can delete it by the following command: 
+	marketing = marketing.drop([marketing.columns[0]], axis=1)
+	marketing.head()
+
+3. Which columns are numerical?
+marketing.dtypes 
+These values are numerical: customer_lifetime_value, income, total_claim_amount, number_of_policies, number_of_open_complaints, months_since_policy_inception, months_since_last_claim,monthly_premium_auto.
+
+4. Which columns are categorical?
+
+The following columns: 'customer'
+	'state'
+	'response'
+	'coverage'
+	'education'
+	'employmentstatus'
+	'gender'
+	'location_code'
+	'marital_status'
+	'policy_type'
+	'policy'
+	'renew_offer_type'
+	'sales_channel'
+	'vehicle_class'
+	'vehicle_size'
+	'vehicle_type'
+
+5. Check and deal with NaN values.
+	marketing.isna().sum()
+	marketing['state'].mode()[0]
+	marketing['state'] = marketing['state'].fillna('California')    #first column with Nan was state
+	len(marketing[marketing['state'].isna()==True])
+
+	marketing['response'].mode()[0]
+	marketing['response'] = marketing['response'].fillna('No')
+	len(marketing[marketing['response'].isna()==True])              #second column with Nan was response
+
+	marketing['vehicle_class']= marketing['vehicle_class'].fillna(marketing['vehicle_class'].mode()[0])
+	len(marketing[marketing['vehicle_class'].isna()==True])         #third column with Nan
+
+	marketing['vehicle_type']= marketing['vehicle_type'].fillna(marketing['vehicle_type'].mode()[0])
+	len(marketing[marketing['vehicle_type'].isna()==True])         #forth column with Nan
+
+	marketing['vehicle_size']= marketing['vehicle_size'].fillna(marketing['vehicle_size'].mode()[0])
+	len(marketing[marketing['vehicle_size'].isna()==True])         #fifth column with Nan
+
+	marketing['months_since_last_claim'] = marketing['months_since_last_claim'].fillna(marketing['months_since_last_claim'].mean())
+	len(marketing[marketing['months_since_last_claim'].isna()==True])                #sixth column with Nan has numerical values so I am using the mean
+
+	marketing['number_of_open_complaints'] = marketing['number_of_open_complaints'].fillna(marketing['number_of_open_complaints'].mean())
+	len(marketing[marketing['number_of_open_complaints'].isna()==True])                #sixth column with Nan has numerical values so I am using the mean
+
+6. Datetime format - Extract the months from the dataset and store in a separate column.
+
+	marketing['effective_to_date'] = pd.to_datetime(marketing['effective_to_date'], errors='coerce')
+	display(marketing.head())
+
+	marketing['month']=np.nan
+	
+	for i in range(len(marketing['effective_to_date'])):
+    if marketing['effective_to_date'][i].month==1:
+            marketing['month'][i]='January'
+    elif marketing['effective_to_date'][i].month==2:
+            marketing['month'][i]='February'
+    elif marketing['effective_to_date'][i].month==3:
+            marketing['month'][i]='March'
+    elif marketing['effective_to_date'][i].month==4:
+            marketing['month'][i]='April'
+    elif marketing['effective_to_date'][i].month==5:
+            marketing['month'][i]='May'
+    elif marketing['effective_to_date'][i].month==6:
+            marketing['month'][i]='June'
+    elif marketing['effective_to_date'][i].month==7:
+            marketing['month'][i]='July'
+    elif marketing['effective_to_date'][i].month==8:
+            marketing['month'][i]='August'
+    elif marketing['effective_to_date'][i].month==9:
+            marketing['month'][i]='September'
+    elif marketing['effective_to_date'][i].month==10:
+            marketing['month'][i]='October'
+    elif marketing['effective_to_date'][i].month==11:
+            marketing['month'][i]='November'
+    elif marketing['effective_to_date'][i].month==12:
+            marketing['month'][i]='December'
+            
+ print(marketing)
+
+
+ 7. Then filter the data to show only the information for the first quarter , ie. January, February and March. Hint: If data from March does not exist, consider only January and February.
+
+marketing[(marketing['month']=='January') | (marketing['month']=='February') | (marketing['month']=='March')] 
